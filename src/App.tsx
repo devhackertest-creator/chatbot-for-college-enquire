@@ -4,7 +4,7 @@
  */
 
 import { useState, useRef, useEffect, KeyboardEvent } from 'react';
-import { Send, Bot, User, GraduationCap, Bus, BookOpen, Info, Moon, Sun, Image as ImageIcon, ArrowRight, Trash2, FileText, X, Volume2, VolumeX } from 'lucide-react';
+import { Send, Bot, User, GraduationCap, Bus, BookOpen, Info, Moon, Sun, Image as ImageIcon, ArrowRight, Trash2, FileText, X, Volume2, VolumeX, Search } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
 // College Data Constants
@@ -44,7 +44,11 @@ const COLLEGE_DATA = {
       "Diploma in Electronics and Communication Engineering",
       "Diploma in Electrical and Electronics Engineering (EEE)",
       "Diploma in Automobile Engineering",
-      "Diploma in Medical Laboratory Technology (MLT)"
+      "Diploma in Medical Laboratory Technology (MLT)",
+      "Diploma in X-Ray Technology",
+      "Diploma in Computer Engineering",
+      "Diploma in Chemical Engineering",
+      "Diploma in Fire & Safety"
     ],
     engineering_ug: [
       "B.E Civil Engineering",
@@ -61,29 +65,105 @@ const COLLEGE_DATA = {
       "B.E Safety & Fire Engineering",
       "B.Tech Food Technology",
       "B.E Petrochemical Engineering",
-      "B.Tech Computer Science and Business Systems"
+      "B.Tech Computer Science and Business Systems",
+      "M.Tech CSE (5 years Integrated)"
+    ],
+    arts_science: [
+      "B.Sc Computer Science (AI&DS)",
+      "B.Sc Computer Science (AI&ML)",
+      "BCA",
+      "B.Sc Information Technology",
+      "B.Sc Micro Biology",
+      "B.Sc Visual Communication",
+      "B.Com CA",
+      "B.Com IT",
+      "B.Sc Computer Science",
+      "B.Sc Data Science",
+      "B.Sc Computer Science (Cyber Security)",
+      "B.Sc Clinical Laboratory Technology",
+      "B.Sc Textile & Fashion Design",
+      "B.Com",
+      "B.Sc Costume Design & Fashion",
+      "B.Com AF",
+      "BBA",
+      "B.Sc Biochemistry",
+      "B.A English",
+      "B.A Tamil",
+      "B.Com Professional Accounting",
+      "M.Sc Microbiology",
+      "M.Sc Computer Science",
+      "M.A English",
+      "M.Com",
+      "M.S.W (Master of Social Work)",
+      "M.Sc Textile & Fashion Designing"
     ],
     medical: [
-      "Homoeopathy",
-      "Siddha",
-      "Naturopathy & Yoga",
-      "Pharmacy",
-      "Nursing",
-      "Physiotherapy",
-      "Occupational Therapy",
-      "Allied Health Sciences"
+      "BNYS (Naturopathy & Yoga)",
+      "BSMS (Siddha)",
+      "BHMS (Homoeopathy)",
+      "Pharm D",
+      "B.Pharm",
+      "B.Sc Nursing",
+      "BPT (Physiotherapy)",
+      "B.Sc RIT",
+      "B.Sc MLT",
+      "DHI",
+      "GNM"
+    ],
+    pg_professional: [
+      "MBA General (2 Years)",
+      "MCA (2 Years)",
+      "MBA Integrated (5 Years)",
+      "M.E Industrial Safety Engg",
+      "M.E Biomedical Engineering",
+      "M.E Environmental Engg",
+      "M.E Structural Engg",
+      "M.E Aeronautical Engg",
+      "M.E Applied Electronics",
+      "M.E Computer Science Engg",
+      "M.E Thermal Engg",
+      "M.E Embedded System",
+      "M.E Power Electronics"
     ]
   },
   TRANSPORT: {
     routes: [
-      { num: 42, route: "Poonachi", morning: "7:40 AM / 9:00 AM", evening: "4:45 PM / 6:15 PM", incharge: "Periya Sami" },
-      { num: 115, route: "Gobi via Nambiyur", morning: "7:15 AM / 9:00 AM", evening: "4:45 PM / 6:15 PM", incharge: "Arul Kumar" },
-      { num: 84, route: "Pudhur", morning: "7:40 AM / 9:00 AM", evening: "4:45 PM / 6:00 PM", incharge: "Arun Kumar" },
-      { num: 72, route: "Nerunjipettai", morning: "8:00 AM / 9:00 AM", evening: "4:45 PM / 6:00 PM", incharge: "Sathish" },
-      { num: 54, route: "Gobi via Kavandapadi", morning: "7:45 AM / 9:00 AM", evening: "4:45 PM / 6:20 PM", incharge: "Thiyagu" },
-      { num: 86, route: "Salem via Elampillai", morning: "7:30 AM / 9:00 AM", evening: "4:45 PM / 6:30 PM", incharge: "Ravi" },
-      { num: 123, route: "Mettur", morning: "7:30 AM / 9:00 AM", evening: "4:45 PM / 7:30 PM", incharge: "Sakthi Kumar" },
-      { num: 81, route: "Kannamoochi", morning: "7:30 AM / 9:00 AM", evening: "4:45 PM / 6:00 PM", incharge: "Murthi" }
+      { 
+        num: 42, route: "Poonachi", morning: "7:40 AM / 9:00 AM", evening: "4:45 PM / 6:15 PM", incharge: "Periya Sami",
+        stops: 15, total: 48, students: 44, staffs: 4, ladies: 1, gents: 3, poly: 8, arts: 14, engg: 14 
+      },
+      { 
+        num: 115, route: "Gobi via Nambiyur", morning: "7:15 AM / 9:00 AM", evening: "4:45 PM / 6:15 PM", incharge: "Arul Kumar",
+        stops: 8, total: 55, students: 47, staffs: 8, ladies: 5, gents: 3, poly: 7, arts: 15, engg: 25 
+      },
+      { 
+        num: 84, route: "Pudhur", morning: "7:40 AM / 9:00 AM", evening: "4:45 PM / 6:00 PM", incharge: "Arun Kumar",
+        stops: 22, total: 55, students: 51, staffs: 4, ladies: 2, gents: 2, poly: 6, arts: 25, engg: 20 
+      },
+      { 
+        num: 72, route: "Nerunjipettai", morning: "8:00 AM / 9:00 AM", evening: "4:45 PM / 6:00 PM", incharge: "Sathish",
+        stops: 10, total: 50, students: 45, staffs: 5, ladies: 2, gents: 3, poly: 5, arts: 18, engg: 22 
+      },
+      { 
+        num: 54, route: "Gobi via Kavandapadi", morning: "7:45 AM / 9:00 AM", evening: "4:45 PM / 6:20 PM", incharge: "Thiyagu",
+        stops: 8, total: 44, students: 40, staffs: 4, ladies: 3, gents: 1, poly: 5, arts: 22, engg: 18 
+      },
+      { 
+        num: 86, route: "Salem via Elampillai", morning: "7:30 AM / 9:00 AM", evening: "4:45 PM / 6:30 PM", incharge: "Ravi",
+        stops: 23, total: 52, students: 49, staffs: 3, ladies: 1, gents: 2, poly: 6, arts: 22, engg: 21 
+      },
+      { 
+        num: 123, route: "Mettur", morning: "7:30 AM / 9:00 AM", evening: "4:45 PM / 7:30 PM", incharge: "Sakthi Kumar",
+        stops: 24, total: 56, students: 52, staffs: 4, ladies: 1, gents: 3, poly: 7, arts: 13, engg: 32 
+      },
+      { 
+        num: 113, route: "Anthiyur", morning: "7:30 AM / 9:00 AM", evening: "4:45 PM / 6:30 PM", incharge: "Unknown",
+        stops: 22, total: 57, students: 54, staffs: 3, ladies: 2, gents: 1, poly: 4, arts: 22, engg: 28 
+      },
+      { 
+        num: 81, route: "Kannamoochi", morning: "7:30 AM / 9:00 AM", evening: "4:45 PM / 6:00 PM", incharge: "Murthi",
+        stops: 13, total: 58, students: 55, staffs: 3, ladies: 1, gents: 2, poly: 7, arts: 18, engg: 30 
+      }
     ]
   },
   PLACEMENTS: {
@@ -113,6 +193,7 @@ type Message = {
   sender: 'bot' | 'user';
   timestamp: Date;
   image?: string;
+  suggestions?: string[];
 };
 
 export default function App() {
@@ -125,6 +206,8 @@ export default function App() {
   const [viewingCampus, setViewingCampus] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [photoIndex, setPhotoIndex] = useState(0);
+  const [isSearching, setIsSearching] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
@@ -170,6 +253,41 @@ export default function App() {
     }
   };
 
+  const performSearch = (query: string) => {
+    if (!query.trim()) return [];
+    const q = query.toLowerCase();
+    const results: { category: string; content: string }[] = [];
+
+    // Search Courses
+    Object.entries(COLLEGE_DATA.COURSES).forEach(([cat, list]) => {
+      list.forEach(course => {
+        if (course.toLowerCase().includes(q)) {
+          results.push({ category: `Course (${cat})`, content: course });
+        }
+      });
+    });
+
+    // Search Transport
+    COLLEGE_DATA.TRANSPORT.routes.forEach(route => {
+      if (route.route.toLowerCase().includes(q) || route.num.toString().includes(q)) {
+        results.push({ category: 'Transport', content: `Bus ${route.num}: ${route.route} (${route.morning})` });
+      }
+    });
+
+    // Search Placements
+    if (COLLEGE_DATA.PLACEMENTS.total.toLowerCase().includes(q)) {
+      results.push({ category: 'Placement', content: COLLEGE_DATA.PLACEMENTS.total });
+    }
+    COLLEGE_DATA.PLACEMENTS.it_recruiters.forEach(r => {
+      if (r.toLowerCase().includes(q)) results.push({ category: 'Placement (IT)', content: r });
+    });
+    COLLEGE_DATA.PLACEMENTS.core_companies.forEach(r => {
+      if (r.toLowerCase().includes(q)) results.push({ category: 'Placement (Core)', content: r });
+    });
+
+    return results;
+  };
+
   useEffect(() => {
     if (isChatStarted) {
       speak("Official Enquiry Bot for Excel Group of Institutions. How can I help you today?");
@@ -180,7 +298,7 @@ export default function App() {
     scrollToBottom();
   }, [messages, isChatStarted]);
 
-  const getBotResponse = (query: string): { text: string; image?: string } => {
+  const getBotResponse = (query: string): { text: string; image?: string; suggestions?: string[] } => {
     const q = query.toLowerCase();
 
     // Keyword Sets
@@ -188,7 +306,7 @@ export default function App() {
     const ENG_KWS = ['engineering', 'engg', 'engieering', 'b.e', 'be', 'btech', 'b.tech', 'ug course'];
     const MED_KWS = ['medical', 'pharmacy', 'nursing', 'physiotherapy', 'siddha', 'homoeopathy', 'naturopathy', 'ayush'];
     const PLACE_KWS = ['placement', 'recruiter', 'company', 'job', 'placed'];
-    const TRANS_KWS = ['bus', 'transport', 'route', 'timing'];
+    const TRANS_KWS = ['bus', 'transport', 'route', 'timing', 'strength', 'stop'];
     const GEN_KWS = ['address', 'contact', 'phone', 'email', 'vision', 'mission', 'location', 'map'];
     const CAMPUS_KWS = ['campus', 'institutions', 'colleges list', 'technical', 'medical campus'];
 
@@ -196,19 +314,31 @@ export default function App() {
     if (TRANS_KWS.some(kw => q.includes(kw)) || q.includes('incharge')) {
       const routes = COLLEGE_DATA.TRANSPORT.routes;
       if (q.includes('what') || q.includes('list') || q.includes('all') || (q.includes('route') && !routes.some(r => q.includes(r.route.toLowerCase())))) {
-        return { text: routes.map(r => `Bus ${r.num} – ${r.route} – ${r.morning} – ${r.evening} – Incharge: ${r.incharge}`).join('\n') };
+        let text = routes.map(r => `Bus ${r.num} – ${r.route} – ${r.morning} – ${r.evening} – Incharge: ${r.incharge}`).join('\n');
+        text += "\n\nNote: Transport is free for Arts, Poly, and B.Ed day scholars (only maintenance fee of Rs.1500/sem applies).";
+        return { 
+          text,
+          suggestions: ["Bus 42 Strength", "Bus 115 Strength", "Bus 84 Strength"]
+        };
       }
       const foundBus = routes.find(r => q.includes(r.route.toLowerCase()) || (q.includes(r.num.toString()) && r.num > 0));
       if (foundBus) {
-        return { text: `Bus ${foundBus.num} – ${foundBus.route} – ${foundBus.morning} – ${foundBus.evening} – Incharge: ${foundBus.incharge}` };
+        let text = `Bus ${foundBus.num} – ${foundBus.route}\nTiming: ${foundBus.morning} / ${foundBus.evening}\nIncharge: ${foundBus.incharge}`;
+        if (foundBus.total) {
+          text += `\n\nStrength Details:\n- Total Strength: ${foundBus.total}\n- Students: ${foundBus.students}\n- Staffs: ${foundBus.staffs} (Ladies: ${foundBus.ladies}, Gents: ${foundBus.gents})\n- Polytechnic: ${foundBus.poly}\n- Arts & Science: ${foundBus.arts}\n- Engineering: ${foundBus.engg}\n- Number of Stops: ${foundBus.stops}`;
+        }
+        return { 
+          text,
+          suggestions: [`Bus ${foundBus.num} Strength`, "Other Bus Routes", "Campus Map"]
+        };
       }
       return { text: "This bus route is not available in the transport database." };
     }
 
-    // 2. Polytechnic (Diploma) Courses
+    // 5. Polytechnic (Diploma) Courses
     if (DIPLOMA_KWS.some(kw => q.includes(kw))) {
       const list = COLLEGE_DATA.COURSES.polytechnic;
-      const courseKeywords = ['cse', 'computer', 'mechanical', 'civil', 'ece', 'eee', 'electrical', 'electronics', 'automobile', 'mlt', 'medical lab'];
+      const courseKeywords = ['cse', 'computer', 'mechanical', 'civil', 'ece', 'eee', 'electrical', 'electronics', 'automobile', 'mlt', 'medical lab', 'x-ray', 'chemical', 'fire', 'safety'];
       const requestedCourse = courseKeywords.find(kw => q.includes(kw));
       
       if (requestedCourse) {
@@ -217,16 +347,22 @@ export default function App() {
           if (requestedCourse === 'mlt' && c.includes('(MLT)')) return true;
           return c.toLowerCase().includes(requestedCourse);
         });
-        if (match) return { text: `Yes. ${match} is available.` };
+        if (match) return { 
+          text: `Yes. ${match} is available.`,
+          suggestions: ["Campus Map"]
+        };
         return { text: "This course is not available in this category." };
       }
-      return { text: list.join('\n') };
+      return { 
+        text: list.join('\n'),
+        suggestions: ["Campus Map"]
+      };
     }
 
-    // 3. Engineering (UG) Courses
+    // 6. Engineering (UG) Courses
     if (ENG_KWS.some(kw => q.includes(kw))) {
       const list = COLLEGE_DATA.COURSES.engineering_ug;
-      const courseKeywords = ['cse', 'computer', 'mechanical', 'civil', 'ece', 'eee', 'electrical', 'electronics', 'ai', 'ds', 'ml', 'it', 'information', 'biomedical', 'aeronautical', 'agriculture', 'safety', 'fire', 'food', 'petrochemical', 'business'];
+      const courseKeywords = ['cse', 'computer', 'mechanical', 'civil', 'ece', 'eee', 'electrical', 'electronics', 'ai', 'ds', 'ml', 'it', 'information', 'biomedical', 'aeronautical', 'agriculture', 'safety', 'fire', 'food', 'petrochemical', 'business', 'integrated'];
       const requestedCourse = courseKeywords.find(kw => q.includes(kw));
 
       if (requestedCourse) {
@@ -236,44 +372,65 @@ export default function App() {
           if (requestedCourse === 'ml' && c.includes('Machine Learning')) return true;
           return c.toLowerCase().includes(requestedCourse);
         });
-        if (match) return { text: `Yes. ${match} is available.` };
+        if (match) return { 
+          text: `Yes. ${match} is available.`,
+          suggestions: ["Campus Map"]
+        };
         return { text: "This course is not available in this category." };
       }
-      return { text: list.join('\n') };
+      return { 
+        text: list.join('\n'),
+        suggestions: ["Campus Map"]
+      };
     }
 
-    // 4. Medical Courses
+    // 7. Medical Courses
     if (MED_KWS.some(kw => q.includes(kw))) {
       const list = COLLEGE_DATA.COURSES.medical;
       const requestedCourse = MED_KWS.find(kw => q.includes(kw) && kw !== 'medical' && kw !== 'ayush');
       
       if (requestedCourse) {
         const match = list.find(c => c.toLowerCase().includes(requestedCourse));
-        if (match) return { text: `Yes. ${match} is available.` };
+        if (match) return { 
+          text: `Yes. ${match} is available.`,
+          suggestions: ["Campus Map"]
+        };
         return { text: "This course is not available in this category." };
       }
-      return { text: list.join('\n') };
+      return { 
+        text: list.join('\n'),
+        suggestions: ["Campus Map"]
+      };
     }
 
-    // 5. Placement Details
+    // 8. Placement Details
     if (PLACE_KWS.some(kw => q.includes(kw))) {
       const p = COLLEGE_DATA.PLACEMENTS;
-      if (q.includes('how many') || q.includes('total')) return { text: p.total };
+      if (q.includes('how many') || q.includes('total')) return { 
+        text: p.total,
+        suggestions: ["IT Recruiters", "Core Companies"]
+      };
       if (q.includes('officer')) return { text: `${p.officer.name}\nEmail: ${p.officer.email}` };
       if (q.includes('it company')) return { text: p.it_recruiters.join('\n') };
       if (q.includes('core company')) return { text: p.core_companies.join('\n') };
-      return { text: `Total: ${p.total}\nIT Recruiters: ${p.it_recruiters.join(', ')}\nCore Companies: ${p.core_companies.join(', ')}` };
+      return { 
+        text: `Total: ${p.total}\nIT Recruiters: ${p.it_recruiters.join(', ')}\nCore Companies: ${p.core_companies.join(', ')}`,
+        suggestions: ["Placement Officer", "Engineering Courses"]
+      };
     }
 
-    // 6. Campus Information
+    // 9. Campus Information
     if (CAMPUS_KWS.some(kw => q.includes(kw))) {
       const c = COLLEGE_DATA.CAMPUSES;
       if (q.includes('technical')) return { text: c.technical.join('\n') };
       if (q.includes('medical')) return { text: c.medical.join('\n') };
-      return { text: `Technical Campus:\n- ${c.technical.join('\n- ')}\n\nMedical Campus:\n- ${c.medical.join('\n- ')}` };
+      return { 
+        text: `Technical Campus:\n- ${c.technical.join('\n- ')}\n\nMedical Campus:\n- ${c.medical.join('\n- ')}`,
+        suggestions: ["Campus Map", "Engineering Courses", "Medical Courses"]
+      };
     }
 
-    // 7. General Information
+    // 10. General Information
     if (GEN_KWS.some(kw => q.includes(kw)) || q.includes('group')) {
       const d = COLLEGE_DATA.GENERAL;
       if (q.includes('address')) return { text: d.address };
@@ -281,7 +438,10 @@ export default function App() {
       if (q.includes('vision')) return { text: d.vision };
       if (q.includes('mission')) return { text: d.mission };
       if (q.includes('email')) return { text: d.email };
-      return { text: `Address: ${d.address}\nPhone: ${d.contact}\nEmail: ${d.email}` };
+      return { 
+        text: `Address: ${d.address}\nPhone: ${d.contact}\nEmail: ${d.email}`,
+        suggestions: ["Campus Map", "Bus Routes"]
+      };
     }
 
     // Photo check
@@ -290,11 +450,15 @@ export default function App() {
       setPhotoIndex(nextIndex);
       return { 
         text: "Campus View",
-        image: COLLEGE_DATA.CAMPUS_IMAGES[photoIndex]
+        image: COLLEGE_DATA.CAMPUS_IMAGES[photoIndex],
+        suggestions: ["Campus Map", "Engineering Courses"]
       };
     }
 
-    return { text: "Sorry, this information is not available. Please contact the college office." };
+    return { 
+      text: "Sorry, this information is not available. Please contact the college office.",
+      suggestions: ["Bus Routes", "Placement Details"]
+    };
   };
 
   const handleSend = () => {
@@ -317,6 +481,7 @@ export default function App() {
         id: (Date.now() + 1).toString(),
         text: response.text,
         image: response.image,
+        suggestions: response.suggestions,
         sender: 'bot',
         timestamp: new Date()
       };
@@ -485,6 +650,81 @@ export default function App() {
               >
                 Back to Application
               </button>
+            </div>
+          </motion.div>
+        ) : isSearching ? (
+          <motion.div
+            key="search"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            exit={{ opacity: 0, scale: 0.95 }}
+            className="flex-1 p-6 sm:p-12 max-w-5xl mx-auto w-full overflow-y-auto"
+          >
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-emerald-500 to-indigo-500 bg-clip-text text-transparent">Search College Data</h2>
+              <button 
+                onClick={() => { setIsSearching(false); setSearchQuery(''); }}
+                className={`p-3 rounded-2xl transition-all ${darkMode ? 'bg-white/5 hover:bg-white/10' : 'bg-slate-100 hover:bg-slate-200'}`}
+              >
+                <X size={24} />
+              </button>
+            </div>
+
+            <div className="relative mb-8">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" size={20} />
+              <input
+                type="text"
+                autoFocus
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search for courses, fees, bus routes, companies..."
+                className={`w-full rounded-2xl pl-12 pr-6 py-4 text-lg focus:outline-none focus:ring-4 transition-all shadow-xl ${
+                  darkMode 
+                    ? 'bg-slate-900 border-white/10 text-white focus:ring-emerald-500/10 focus:border-emerald-500' 
+                    : 'bg-white border-slate-200 text-slate-800 focus:ring-emerald-500/20 focus:border-emerald-500'
+                } border`}
+              />
+            </div>
+
+            <div className="space-y-4">
+              {performSearch(searchQuery).length > 0 ? (
+                performSearch(searchQuery).map((result, idx) => (
+                  <motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: idx * 0.05 }}
+                    className={`p-4 rounded-2xl border transition-all cursor-pointer hover:scale-[1.01] ${
+                      darkMode ? 'bg-white/5 border-white/10 hover:bg-white/10' : 'bg-white border-slate-100 hover:border-emerald-500/20 shadow-sm'
+                    }`}
+                    onClick={() => {
+                      setInput(result.content);
+                      setIsSearching(false);
+                      setSearchQuery('');
+                      setTimeout(handleSend, 0);
+                    }}
+                  >
+                    <div className="flex justify-between items-start mb-1">
+                      <span className={`text-[10px] font-black uppercase tracking-widest px-2 py-1 rounded-md ${
+                        darkMode ? 'bg-emerald-500/20 text-emerald-400' : 'bg-emerald-50 text-emerald-600'
+                      }`}>
+                        {result.category}
+                      </span>
+                      <ArrowRight size={14} className="text-slate-400" />
+                    </div>
+                    <p className={`text-sm font-medium ${darkMode ? 'text-white' : 'text-slate-800'}`}>{result.content}</p>
+                  </motion.div>
+                ))
+              ) : searchQuery.trim() ? (
+                <div className="text-center py-12 opacity-50">
+                  <Search size={48} className="mx-auto mb-4 opacity-20" />
+                  <p>No results found for "{searchQuery}"</p>
+                </div>
+              ) : (
+                <div className="text-center py-12 opacity-50">
+                  <p>Start typing to search through our database...</p>
+                </div>
+              )}
             </div>
           </motion.div>
         ) : isAwakening ? (
@@ -711,6 +951,15 @@ export default function App() {
               </div>
               <div className="flex items-center gap-2 sm:gap-3">
                 <button
+                  onClick={() => setIsSearching(true)}
+                  title="Search Data"
+                  className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
+                    darkMode ? 'bg-white/5 text-white hover:bg-white/10' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                  }`}
+                >
+                  <Search size={20} className="text-emerald-500" />
+                </button>
+                <button
                   onClick={() => setVoiceEnabled(!voiceEnabled)}
                   title={voiceEnabled ? "Mute Voice" : "Unmute Voice"}
                   className={`w-10 h-10 rounded-xl flex items-center justify-center transition-all ${
@@ -792,6 +1041,26 @@ export default function App() {
                           </span>
                         </div>
                       </div>
+                      {message.sender === 'bot' && message.suggestions && (
+                        <div className="flex flex-wrap gap-2 mt-3 ml-11">
+                          {message.suggestions.map((s, i) => (
+                            <button
+                              key={i}
+                              onClick={() => {
+                                setInput(s);
+                                setTimeout(handleSend, 0);
+                              }}
+                              className={`px-3 py-1.5 rounded-full text-[10px] font-bold border transition-all ${
+                                darkMode 
+                                  ? 'bg-emerald-500/10 border-emerald-500/20 text-emerald-400 hover:bg-emerald-500/20' 
+                                  : 'bg-emerald-50 border-emerald-100 text-emerald-600 hover:bg-emerald-100'
+                              }`}
+                            >
+                              {s}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </motion.div>
                   ))}
                 </AnimatePresence>
@@ -802,7 +1071,6 @@ export default function App() {
             {/* Quick Actions */}
             <div className="max-w-4xl w-full mx-auto px-4 pb-2 flex gap-2 overflow-x-auto no-scrollbar">
               {[
-                { label: 'Campus Photos', icon: <ImageIcon size={14} className="text-amber-500" />, query: 'Show me campus photos' },
                 { label: 'Medical Courses', icon: <GraduationCap size={14} className="text-rose-500" />, query: 'List medical courses' },
                 { label: 'Engineering', icon: <BookOpen size={14} className="text-indigo-500" />, query: 'List engineering courses' },
                 { label: 'Diploma', icon: <GraduationCap size={14} className="text-emerald-500" />, query: 'List diploma courses' },
